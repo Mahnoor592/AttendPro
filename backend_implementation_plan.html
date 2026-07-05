@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Backend Implementation Plan — AttendPro</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1e293b; background: #fff; line-height: 1.6; }
+
+    .page { max-width: 900px; margin: 0 auto; padding: 48px 56px; }
+
+    /* Cover */
+    .cover { text-align: center; padding: 60px 0 48px; border-bottom: 2px solid #0f172a; margin-bottom: 48px; }
+    .cover .badge { display: inline-block; background: #0f172a; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 5px 16px; border-radius: 20px; margin-bottom: 24px; }
+    .cover h1 { font-size: 32px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .cover h1 span { color: #2563eb; }
+    .cover p { font-size: 14px; color: #64748b; margin-top: 8px; }
+    .cover .meta { display: flex; justify-content: center; gap: 32px; margin-top: 28px; }
+    .cover .meta div { text-align: center; }
+    .cover .meta .label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #94a3b8; }
+    .cover .meta .value { font-size: 13px; font-weight: 600; color: #334155; margin-top: 3px; }
+
+    /* TOC */
+    .toc { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 24px 28px; margin-bottom: 40px; }
+    .toc h3 { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #94a3b8; margin-bottom: 14px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { font-size: 13px; color: #334155; padding: 3px 0; font-weight: 500; }
+    .toc li span { color: #94a3b8; font-size: 11px; margin-left: 6px; }
+
+    /* Section */
+    .section { margin-bottom: 44px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; }
+    .step-num { width: 32px; height: 32px; background: #0f172a; color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+    .step-num.blue { background: #2563eb; }
+    .step-num.green { background: #16a34a; }
+    .step-num.amber { background: #d97706; }
+    .step-num.red { background: #dc2626; }
+    .step-num.purple { background: #7c3aed; }
+    .step-num.teal { background: #0891b2; }
+    .step-num.pink { background: #db2777; }
+    .step-num.gray { background: #475569; }
+    .section-header h2 { font-size: 18px; font-weight: 700; color: #0f172a; }
+    .section-header .tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+    .tag-start { background: #dcfce7; color: #16a34a; }
+    .tag-db { background: #dbeafe; color: #2563eb; }
+    .tag-api { background: #fef3c7; color: #d97706; }
+    .tag-email { background: #fce7f3; color: #db2777; }
+    .tag-dbms { background: #ede9fe; color: #7c3aed; }
+
+    h3 { font-size: 13px; font-weight: 700; color: #334155; margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    p { color: #475569; margin-bottom: 10px; }
+    ul, ol { padding-left: 20px; margin-bottom: 12px; }
+    li { color: #475569; padding: 2px 0; }
+    li strong { color: #1e293b; }
+
+    /* Code blocks */
+    pre { background: #0f172a; color: #e2e8f0; padding: 16px 20px; border-radius: 8px; font-size: 11.5px; font-family: 'Consolas', 'Courier New', monospace; margin: 10px 0 16px; overflow-x: auto; line-height: 1.7; }
+    code { background: #f1f5f9; color: #dc2626; padding: 1px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 11.5px; }
+    pre code { background: none; color: #e2e8f0; padding: 0; }
+
+    /* Comment color in pre */
+    .c { color: #64748b; }
+    .k { color: #93c5fd; }
+    .s { color: #86efac; }
+    .fn { color: #fde68a; }
+    .cm { color: #f9a8d4; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 12px; }
+    th { background: #0f172a; color: #fff; padding: 9px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; }
+    td { padding: 9px 14px; border-bottom: 1px solid #f1f5f9; color: #475569; }
+    tr:hover td { background: #f8fafc; }
+    td code { font-size: 11px; }
+
+    /* Callout boxes */
+    .callout { border-left: 4px solid; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; }
+    .callout-blue { border-color: #2563eb; background: #eff6ff; }
+    .callout-green { border-color: #16a34a; background: #f0fdf4; }
+    .callout-amber { border-color: #d97706; background: #fffbeb; }
+    .callout p { margin: 0; font-size: 12.5px; }
+    .callout strong { color: #1e293b; }
+
+    /* File tree */
+    .filetree { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; font-family: 'Consolas', monospace; font-size: 12px; color: #334155; margin: 10px 0 16px; line-height: 1.8; }
+    .filetree .dir { color: #2563eb; font-weight: 600; }
+    .filetree .new { color: #16a34a; }
+
+    /* Endpoint pills */
+    .endpoint { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; font-family: monospace; margin-right: 6px; }
+    .get { background: #dbeafe; color: #1d4ed8; }
+    .post { background: #dcfce7; color: #15803d; }
+    .put { background: #fef3c7; color: #b45309; }
+    .delete { background: #fee2e2; color: #b91c1c; }
+
+    /* Page break */
+    .pagebreak { page-break-before: always; padding-top: 32px; }
+
+    /* Footer */
+    .footer { text-align: center; padding: 32px 0 0; border-top: 1px solid #e2e8f0; margin-top: 48px; font-size: 11px; color: #94a3b8; }
+
+    @media print {
+      body { font-size: 12px; }
+      .page { padding: 32px 40px; }
+      pre { font-size: 10.5px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="badge">DBMS Lab Project</div>
+    <h1>Attend<span>Pro</span> — Backend Implementation Plan</h1>
+    <p>Smart Attendance Management System · Laravel 13 + MySQL + React</p>
+    <div class="meta">
+      <div><div class="label">Framework</div><div class="value">Laravel 13</div></div>
+      <div><div class="label">Database</div><div class="value">MySQL</div></div>
+      <div><div class="label">Auth</div><div class="value">Laravel Sanctum</div></div>
+      <div><div class="label">Frontend</div><div class="value">React + Vite</div></div>
+      <div><div class="label">Email</div><div class="value">Mailtrap (dev)</div></div>
+    </div>
+  </div>
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li>Prerequisites &amp; PHP Setup <span>— Install PHP 8.2+, update PATH, verify version</span></li>
+      <li>Project Setup &amp; Installation <span>— Laravel project, packages, CORS, .env</span></li>
+      <li>Database Migrations &amp; Seeders <span>— All 6 tables + indexes + foreign keys</span></li>
+      <li>Authentication — Login, Signup, Logout, Me <span>— Sanctum tokens + role redirect</span></li>
+      <li>Branches CRUD <span>— Create, read, update, delete branches + geofence fields</span></li>
+      <li>Employees CRUD <span>— Create, read, update, delete, activate/deactivate</span></li>
+      <li>Clock In / Clock Out <span>— GPS, Haversine geofence, flags, working hours</span></li>
+      <li>Today Dashboard <span>— Admin/HR stats + employee workspace</span></li>
+      <li>Schedule Board <span>— Weekly assign/update + email on assign</span></li>
+      <li>Shift Requests <span>— Submit, approve, deny + emails both ways</span></li>
+      <li>Attendance Reports <span>— Filtered log, anomaly feed</span></li>
+      <li>Settings Page <span>— Company config, geofence tolerance, email toggles</span></li>
+      <li>DBMS Extras <span>— MySQL View, Stored Procedure, Indexes (lab marks)</span></li>
+    </ol>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       PAGE-WISE BUILD ORDER
+  ════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num" style="background:#0891b2;">⚡</div>
+      <h2>Page-Wise Build Order</h2>
+      <span class="tag tag-start">FOLLOW THIS</span>
+    </div>
+
+    <p>Build backend and frontend together one feature at a time — wire each page end-to-end before moving to the next. This way something is always working and testable.</p>
+
+    <table>
+      <tr><th>#</th><th>Feature / Page</th><th>Why This Order</th><th>Depends On</th></tr>
+      <tr>
+        <td><strong>1</strong></td>
+        <td>Auth — Login page</td>
+        <td>Every other endpoint needs a valid Sanctum token. Get this working first.</td>
+        <td>Nothing</td>
+      </tr>
+      <tr>
+        <td><strong>2</strong></td>
+        <td>Branches — Admin Branches page</td>
+        <td>Simplest CRUD, no foreign key dependencies. Good first real feature to wire.</td>
+        <td>Auth</td>
+      </tr>
+      <tr>
+        <td><strong>3</strong></td>
+        <td>Employees — Admin Employees page</td>
+        <td>Employee records reference branches. Branches must exist first.</td>
+        <td>Branches</td>
+      </tr>
+      <tr>
+        <td><strong>4</strong></td>
+        <td>Schedule — Admin/HR Schedule board</td>
+        <td>Schedules link employees to branches. Both must exist before assigning shifts.</td>
+        <td>Employees + Branches</td>
+      </tr>
+      <tr>
+        <td><strong>5</strong></td>
+        <td>Attendance / Clock In-Out — Employee Today page</td>
+        <td>Most complex feature. Needs schedule for flag assignment and branch for geofence. Build after schedule is solid.</td>
+        <td>Schedule + GeofenceService</td>
+      </tr>
+      <tr>
+        <td><strong>6</strong></td>
+        <td>Shift Requests — Employee Requests + HR ShiftRequests page</td>
+        <td>Requests reference schedule rows. Schedule must be in place first.</td>
+        <td>Schedule</td>
+      </tr>
+      <tr>
+        <td><strong>7</strong></td>
+        <td>Dashboard / Today — Admin &amp; HR Today page</td>
+        <td>Stat cards and anomaly feed depend on real attendance data existing. Build after check-in/out works.</td>
+        <td>Attendance data</td>
+      </tr>
+      <tr>
+        <td><strong>8</strong></td>
+        <td>Attendance Reports — Admin/HR Attendance page</td>
+        <td>Filtered log + heatmap. Needs attendance data and the summary view.</td>
+        <td>Attendance data</td>
+      </tr>
+      <tr>
+        <td><strong>9</strong></td>
+        <td>Settings — Admin Settings page</td>
+        <td>Standalone key-value store. No dependencies. Save for last.</td>
+        <td>Nothing</td>
+      </tr>
+    </table>
+
+    <div class="callout callout-green">
+      <p><strong>Pattern per feature:</strong> Model → API Resource → Controller → Service (if needed) → Route → wire to frontend page → test in browser. Then move to the next feature.</p>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       PREREQUISITES — PHP SETUP
+  ════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num">0</div>
+      <h2>Prerequisites &amp; PHP Setup</h2>
+      <span class="tag tag-start">BEFORE ANYTHING</span>
+    </div>
+
+    <p>Laravel 13 requires <strong>PHP 8.2 or higher</strong>. Before creating the project, verify your PHP version and upgrade if needed.</p>
+
+    <h3>Check Your Current PHP Version</h3>
+    <pre>php --version</pre>
+    <p>If it shows <strong>PHP 8.2+</strong> you are good. If it shows anything lower (e.g. 8.0.x) follow the steps below.</p>
+
+    <h3>Download PHP 8.2</h3>
+    <ol>
+      <li>Go to <strong>windows.php.net/download</strong> in your browser</li>
+      <li>Find the <strong>PHP 8.2</strong> section</li>
+      <li>Download: <strong>VS17 x64 Thread Safe → Zip</strong> (around 34 MB)</li>
+    </ol>
+
+    <h3>Extract &amp; Set Up</h3>
+    <ol>
+      <li>Right-click the downloaded zip → <strong>Extract All</strong></li>
+      <li>Set the destination to <code>C:\php82</code> and click Extract</li>
+      <li>Open <code>C:\php82</code> in File Explorer</li>
+      <li>Find the file named <code>php.ini-development</code> and <strong>rename it</strong> to <code>php.ini</code></li>
+    </ol>
+
+    <h3>Update Windows PATH (so PowerShell finds the new PHP)</h3>
+    <ol>
+      <li>Press Windows key → search <strong>"Edit the system environment variables"</strong> → open it</li>
+      <li>Click the <strong>Environment Variables</strong> button at the bottom</li>
+      <li>Under <strong>System variables</strong> find <strong>Path</strong> → click it → click <strong>Edit</strong></li>
+      <li>Click <strong>New</strong> → type <code>C:\php82</code></li>
+      <li>Click on <code>C:\php82</code> in the list → keep clicking <strong>Move Up</strong> until it is at the very <strong>top</strong></li>
+      <li>Find any old PHP path (e.g. <code>C:\xampp\php</code>) → click it → click <strong>Delete</strong></li>
+      <li>Click <strong>OK</strong> on all windows</li>
+    </ol>
+
+    <h3>Verify the Upgrade</h3>
+    <p>Close PowerShell completely, reopen it, then run:</p>
+    <pre>php --version</pre>
+    <p>You should now see <strong>PHP 8.2.x</strong> or higher. Only proceed to Step 1 once this is confirmed.</p>
+
+    <div class="callout callout-amber">
+      <p><strong>Note:</strong> If <code>php --version</code> still shows the old version, the old PHP path is still taking priority in PATH. Go back to Environment Variables, find the old path, and delete it or move <code>C:\php82</code> higher up in the list.</p>
+    </div>
+
+    <h3>Also Required — Composer</h3>
+    <p>Composer is the PHP package manager (like npm for Node.js). Check if you have it:</p>
+    <pre>composer --version</pre>
+    <p>If not installed, download the installer from <strong>getcomposer.org</strong> → run it → restart PowerShell.</p>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 1 — PROJECT SETUP
+  ════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num">1</div>
+      <h2>Project Setup &amp; Installation</h2>
+      <span class="tag tag-start">START HERE</span>
+    </div>
+
+    <h3>1.1 Create Laravel Project</h3>
+    <pre>composer create-project laravel/laravel attendance-backend
+cd attendance-backend
+php artisan install:api        <span class="c"># installs Sanctum + creates routes/api.php</span></pre>
+
+    <h3>1.2 Install Additional Packages</h3>
+    <pre>composer require laravel/sanctum   <span class="c"># already included via install:api</span></pre>
+
+    <h3>1.3 Configure .env</h3>
+    <pre>APP_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:5173
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=attendance_db
+DB_USERNAME=root
+DB_PASSWORD=
+
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=<span class="s">your_mailtrap_username</span>
+MAIL_PASSWORD=<span class="s">your_mailtrap_password</span>
+MAIL_FROM_ADDRESS=noreply@attendpro.com
+MAIL_FROM_NAME=AttendPro</pre>
+
+    <h3>1.4 Configure CORS — config/cors.php</h3>
+    <pre>'paths'           => ['api/*', 'sanctum/csrf-cookie'],
+'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:5173')],
+'allowed_methods' => ['*'],
+'allowed_headers' => ['*'],
+'supports_credentials' => true,</pre>
+
+    <h3>1.5 Register Role Middleware — bootstrap/app.php</h3>
+    <pre>->withMiddleware(function (Middleware $middleware) {
+    $middleware->alias([
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
+    ]);
+})</pre>
+
+    <div class="callout callout-blue">
+      <p><strong>Create the database first:</strong> Open MySQL / phpMyAdmin and run <code>CREATE DATABASE attendance_db;</code> before running migrations.</p>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 2 — MIGRATIONS
+  ════════════════════════════════════════════════════ -->
+  <div class="section pagebreak">
+    <div class="section-header">
+      <div class="step-num blue">2</div>
+      <h2>Database Migrations &amp; Seeders</h2>
+      <span class="tag tag-db">DATABASE</span>
+    </div>
+
+    <p>Run migrations in this order. Every table below maps directly to a Laravel migration file.</p>
+
+    <h3>2.1 Migration Files to Create</h3>
+    <pre>php artisan make:migration create_branches_table
+php artisan make:migration create_users_table          <span class="c"># modify default users migration</span>
+php artisan make:migration create_schedules_table
+php artisan make:migration create_attendance_logs_table
+php artisan make:migration create_shift_requests_table
+php artisan make:migration create_settings_table</pre>
+
+    <h3>2.2 Table Schemas</h3>
+
+    <table>
+      <tr><th>Table</th><th>Key Columns</th><th>Notes</th></tr>
+      <tr><td><code>branches</code></td><td>id, name, address, lat, lng, radius_meters, shift_start, shift_end</td><td>lat/lng for geofence center</td></tr>
+      <tr><td><code>users</code></td><td>id, name, email, password, role, branch_id, is_active</td><td>role: admin / hr / employee</td></tr>
+      <tr><td><code>schedules</code></td><td>id, employee_id, branch_id, day_of_week, shift_start, shift_end, week_start_date</td><td>FK → users, branches</td></tr>
+      <tr><td><code>attendance_logs</code></td><td>id, employee_id, branch_id, type, gps_lat, gps_lng, readable_address, timestamp, is_valid, flag, working_hours</td><td>type: check_in/check_out · flag: on_time/late/early_departure</td></tr>
+      <tr><td><code>shift_requests</code></td><td>id, employee_id, schedule_id, reason, status, reviewed_by, reviewed_at, response_note</td><td>status: pending/approved/denied</td></tr>
+      <tr><td><code>settings</code></td><td>id, key, value</td><td>key-value store for app config</td></tr>
+    </table>
+
+    <h3>2.3 Important Migration Details</h3>
+    <pre><span class="c">// attendance_logs migration — key columns</span>
+$table->foreignId('employee_id')->constrained('users')->onDelete('cascade');
+$table->foreignId('branch_id')->constrained('branches')->onDelete('cascade');
+$table->enum('type', ['check_in', 'check_out']);
+$table->decimal('gps_lat', 10, 7)->nullable();
+$table->decimal('gps_lng', 10, 7)->nullable();
+$table->string('readable_address')->nullable();
+$table->timestamp('timestamp');
+$table->boolean('is_valid')->default(true);
+$table->enum('flag', ['on_time', 'late', 'early_departure'])->nullable();
+$table->decimal('working_hours', 5, 2)->nullable();
+
+<span class="c">// Add indexes for performance (DBMS marks)</span>
+$table->index(['employee_id', 'timestamp']);</pre>
+
+    <h3>2.4 Seeders</h3>
+    <pre>php artisan make:seeder DatabaseSeeder
+php artisan make:seeder BranchSeeder
+php artisan make:seeder UserSeeder
+php artisan make:seeder SettingsSeeder</pre>
+
+    <p>Seed at minimum: <strong>2 branches</strong>, <strong>1 admin user</strong>, <strong>1 hr user</strong>, <strong>3–5 employee users</strong>, and default settings rows.</p>
+
+    <pre><span class="c">// UserSeeder example</span>
+User::create([
+    'name'      => 'Admin User',
+    'email'     => 'admin@attendpro.com',
+    'password'  => Hash::make('password'),
+    'role'      => 'admin',
+    'branch_id' => 1,
+    'is_active' => true,
+]);</pre>
+
+    <pre>php artisan migrate --seed    <span class="c"># run everything at once</span></pre>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 3 — AUTH
+  ════════════════════════════════════════════════════ -->
+  <div class="section pagebreak">
+    <div class="section-header">
+      <div class="step-num green">3</div>
+      <h2>Authentication — Login, Signup, Logout, Me</h2>
+      <span class="tag tag-start">WIRE FIRST</span>
+    </div>
+
+    <div class="callout callout-green">
+      <p><strong>Start with this step.</strong> Every other page needs a valid Sanctum token. Get login working end-to-end before touching any other endpoint.</p>
+    </div>
+
+    <h3>3.1 Files to Create</h3>
+    <div class="filetree">
+      <span class="dir">app/Http/Controllers/</span><br>
+      &nbsp;&nbsp;<span class="new">AuthController.php</span><br>
+      <span class="dir">app/Http/Requests/</span><br>
+      &nbsp;&nbsp;<span class="new">LoginRequest.php</span><br>
+      &nbsp;&nbsp;<span class="new">RegisterRequest.php</span><br>
+      <span class="dir">app/Http/Middleware/</span><br>
+      &nbsp;&nbsp;<span class="new">RoleMiddleware.php</span>
+    </div>
+
+    <h3>3.2 AuthController Methods</h3>
+    <table>
+      <tr><th>Method</th><th>Route</th><th>What It Does</th></tr>
+      <tr><td><code>register()</code></td><td><span class="endpoint post">POST</span> /api/register</td><td>Create user, return token + user object</td></tr>
+      <tr><td><code>login()</code></td><td><span class="endpoint post">POST</span> /api/login</td><td>Validate credentials, return token + user object</td></tr>
+      <tr><td><code>logout()</code></td><td><span class="endpoint post">POST</span> /api/logout</td><td>Delete current token</td></tr>
+      <tr><td><code>me()</code></td><td><span class="endpoint get">GET</span> /api/me</td><td>Return authenticated user</td></tr>
+    </table>
+
+    <h3>3.3 Login Response Shape (React expects this exactly)</h3>
+    <pre>{
+    "token": "1|abc123...",
+    "user": {
+        "id": 1,
+        "name": "Admin User",
+        "email": "admin@attendpro.com",
+        "role": "admin",            <span class="c">// "admin" | "hr" | "employee"</span>
+        "branch_id": 1,
+        "is_active": true
+    }
+}</pre>
+
+    <h3>3.4 RoleMiddleware</h3>
+    <pre><span class="k">public function</span> <span class="fn">handle</span>(Request $request, Closure $next, string ...$roles): Response
+{
+    <span class="k">if</span> (!in_array($request->user()?->role, $roles)) {
+        <span class="k">return</span> response()->json(['message' => 'Forbidden'], 403);
+    }
+    <span class="k">return</span> $next($request);
+}</pre>
+
+    <h3>3.5 React Wiring (after login)</h3>
+    <pre><span class="c">// Store in localStorage + Redux</span>
+localStorage.setItem('token', response.data.token);
+localStorage.setItem('current_user', JSON.stringify(response.data.user));
+
+<span class="c">// Role-based redirect</span>
+<span class="k">if</span> (user.role === 'admin')    navigate('/manager/today');
+<span class="k">if</span> (user.role === 'hr')       navigate('/manager/today');
+<span class="k">if</span> (user.role === 'employee') navigate('/employee/today');</pre>
+
+    <h3>3.6 Signup Page Note</h3>
+    <p>The Signup page should only allow creating <strong>employee</strong> accounts (role hardcoded to <code>employee</code>). Admin and HR accounts are created by the admin through the Employees page, not through public signup.</p>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 4 — BRANCHES
+  ════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num amber">4</div>
+      <h2>Branches CRUD</h2>
+      <span class="tag tag-api">API</span>
+    </div>
+
+    <h3>4.1 Files to Create</h3>
+    <div class="filetree">
+      <span class="new">app/Http/Controllers/BranchController.php</span><br>
+      <span class="new">app/Http/Requests/CreateBranchRequest.php</span><br>
+      <span class="new">app/Http/Resources/BranchResource.php</span><br>
+      <span class="new">app/Models/Branch.php</span>
+    </div>
+
+    <h3>4.2 Endpoints (admin only)</h3>
+    <table>
+      <tr><th>Method</th><th>Route</th><th>Description</th></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/branches</td><td>List all branches</td></tr>
+      <tr><td><span class="endpoint post">POST</span></td><td>/api/branches</td><td>Create branch</td></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/branches/{id}</td><td>Single branch</td></tr>
+      <tr><td><span class="endpoint put">PUT</span></td><td>/api/branches/{id}</td><td>Update branch + geofence</td></tr>
+      <tr><td><span class="endpoint delete">DELETE</span></td><td>/api/branches/{id}</td><td>Delete branch</td></tr>
+    </table>
+
+    <h3>4.3 Validation Rules</h3>
+    <pre>'name'          => 'required|string|max:255',
+'address'       => 'required|string',
+'lat'           => 'required|numeric|between:-90,90',
+'lng'           => 'required|numeric|between:-180,180',
+'radius_meters' => 'required|integer|min:50|max:5000',
+'shift_start'   => 'required|date_format:H:i',
+'shift_end'     => 'required|date_format:H:i',</pre>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 5 — EMPLOYEES
+  ════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num red">5</div>
+      <h2>Employees CRUD</h2>
+      <span class="tag tag-api">API</span>
+    </div>
+
+    <h3>5.1 Files to Create</h3>
+    <div class="filetree">
+      <span class="new">app/Http/Controllers/EmployeeController.php</span><br>
+      <span class="new">app/Http/Requests/CreateEmployeeRequest.php</span><br>
+      <span class="new">app/Http/Resources/UserResource.php</span>
+    </div>
+
+    <h3>5.2 Endpoints (admin only)</h3>
+    <table>
+      <tr><th>Method</th><th>Route</th><th>Description</th></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/employees</td><td>List all employees (filter by branch/role)</td></tr>
+      <tr><td><span class="endpoint post">POST</span></td><td>/api/employees</td><td>Create employee with hashed password</td></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/employees/{id}</td><td>Single employee</td></tr>
+      <tr><td><span class="endpoint put">PUT</span></td><td>/api/employees/{id}</td><td>Update employee info / branch assignment</td></tr>
+      <tr><td><span class="endpoint delete">DELETE</span></td><td>/api/employees/{id}</td><td>Delete employee</td></tr>
+      <tr><td><span class="endpoint put">PUT</span></td><td>/api/employees/{id}/toggle-status</td><td>Activate / deactivate employee</td></tr>
+    </table>
+
+    <div class="callout callout-amber">
+      <p><strong>Important:</strong> The "Role" field in the Add Employee form is the job title (Software Engineer, Designer, etc.) — NOT the system role. System role defaults to <code>employee</code> for all new users created here.</p>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 6 — CLOCK IN / OUT
+  ════════════════════════════════════════════════════ -->
+  <div class="section pagebreak">
+    <div class="section-header">
+      <div class="step-num purple">6</div>
+      <h2>Clock In / Clock Out</h2>
+      <span class="tag tag-api">CORE FEATURE</span>
+    </div>
+
+    <p>This is the most important backend feature. GPS coordinates come from the browser, geofence validation happens server-side using the Haversine formula — never trust client-side math.</p>
+
+    <h3>6.1 Files to Create</h3>
+    <div class="filetree">
+      <span class="new">app/Http/Controllers/AttendanceController.php</span><br>
+      <span class="new">app/Http/Requests/CheckInRequest.php</span><br>
+      <span class="new">app/Services/AttendanceService.php</span><br>
+      <span class="new">app/Services/GeofenceService.php</span><br>
+      <span class="new">app/Http/Resources/AttendanceLogResource.php</span><br>
+      <span class="new">app/Models/AttendanceLog.php</span>
+    </div>
+
+    <h3>6.2 Endpoints</h3>
+    <table>
+      <tr><th>Method</th><th>Route</th><th>Middleware</th><th>Description</th></tr>
+      <tr><td><span class="endpoint post">POST</span></td><td>/api/attendance/checkin</td><td>employee</td><td>GPS → validate → log → return flag</td></tr>
+      <tr><td><span class="endpoint post">POST</span></td><td>/api/attendance/checkout</td><td>employee</td><td>GPS → validate → log → calc working_hours</td></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/attendance/mine</td><td>employee</td><td>Own attendance history</td></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/attendance</td><td>admin, hr</td><td>All logs with filters</td></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/attendance/anomalies</td><td>admin, hr</td><td>Rejected GPS, repeat lates, missing checkouts</td></tr>
+    </table>
+
+    <h3>6.3 Haversine Formula (GeofenceService)</h3>
+    <pre><span class="k">private function</span> <span class="fn">haversine</span>(float $lat1, float $lng1, float $lat2, float $lng2): float
+{
+    $R    = 6371000; <span class="c">// Earth radius in meters</span>
+    $dLat = deg2rad($lat2 - $lat1);
+    $dLng = deg2rad($lng2 - $lng1);
+    $a    = sin($dLat/2)**2
+          + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLng/2)**2;
+    <span class="k">return</span> $R * 2 * atan2(sqrt($a), sqrt(1 - $a));
+}
+
+<span class="k">public function</span> <span class="fn">isWithinGeofence</span>(float $userLat, float $userLng, Branch $branch): bool
+{
+    $distance = $this->haversine($userLat, $userLng, $branch->lat, $branch->lng);
+    $tolerance = Setting::getValue('geofence_buffer', 0); <span class="c">// from settings table</span>
+    <span class="k">return</span> $distance <= ($branch->radius_meters + $tolerance);
+}</pre>
+
+    <h3>6.4 Flag Assignment Logic (AttendanceService)</h3>
+    <pre><span class="k">public function</span> <span class="fn">assignFlag</span>(AttendanceLog $log, Schedule $schedule): string
+{
+    $checkInTime  = Carbon::parse($log->timestamp);
+    $shiftStart   = Carbon::parse($schedule->shift_start);
+    $lateThreshold = $shiftStart->copy()->addMinutes(15); <span class="c">// 15 min grace period</span>
+
+    <span class="k">if</span> ($log->type === 'check_in') {
+        <span class="k">return</span> $checkInTime->lte($lateThreshold) ? 'on_time' : 'late';
+    }
+
+    $shiftEnd    = Carbon::parse($schedule->shift_end);
+    $earlyThreshold = $shiftEnd->copy()->subMinutes(30); <span class="c">// 30 min before shift end</span>
+    <span class="k">return</span> $checkInTime->lt($earlyThreshold) ? 'early_departure' : 'on_time';
+}
+
+<span class="k">public function</span> <span class="fn">calculateWorkingHours</span>(int $employeeId, Carbon $date): float
+{
+    $checkIn  = AttendanceLog::where('employee_id', $employeeId)
+                  ->whereDate('timestamp', $date)
+                  ->where('type', 'check_in')->latest()->first();
+    $checkOut = AttendanceLog::where('employee_id', $employeeId)
+                  ->whereDate('timestamp', $date)
+                  ->where('type', 'check_out')->latest()->first();
+
+    <span class="k">if</span> (!$checkIn || !$checkOut) return 0;
+    <span class="k">return</span> Carbon::parse($checkIn->timestamp)
+                  ->diffInMinutes(Carbon::parse($checkOut->timestamp)) / 60;
+}</pre>
+
+    <h3>6.5 Duplicate Prevention</h3>
+    <pre><span class="c">// Prevent double check-in on same day</span>
+$alreadyCheckedIn = AttendanceLog::where('employee_id', $user->id)
+    ->whereDate('timestamp', today())
+    ->where('type', 'check_in')
+    ->exists();
+
+<span class="k">if</span> ($alreadyCheckedIn) {
+    <span class="k">return</span> response()->json(['message' => 'Already checked in today'], 422);
+}</pre>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 7 — TODAY DASHBOARD
+  ════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num teal">7</div>
+      <h2>Today Dashboard</h2>
+      <span class="tag tag-api">API</span>
+    </div>
+
+    <h3>7.1 File to Create</h3>
+    <div class="filetree">
+      <span class="new">app/Http/Controllers/DashboardController.php</span>
+    </div>
+
+    <h3>7.2 Admin / HR Response — GET /api/dashboard</h3>
+    <pre>{
+    "total":    42,      <span class="c">// total active employees</span>
+    "present":  28,      <span class="c">// checked in today</span>
+    "late":      5,      <span class="c">// checked in with flag=late today</span>
+    "absent":    9,      <span class="c">// total - present</span>
+    "anomalies": [
+        { "employee": "Ahmed Khan", "type": "GPS Rejected",  "detail": "480m from Lahore Office", "time": "09:04" },
+        { "employee": "Sara Malik", "type": "Repeat Late",   "detail": "3rd consecutive late",   "time": "09:23" }
+    ],
+    "recent_logs": [
+        { "employee": "Fatima Ali", "action": "Check In",  "time": "08:47", "branch": "Lahore Office" }
+    ]
+}</pre>
+
+    <h3>7.3 Employee Response — GET /api/dashboard/my</h3>
+    <pre>{
+    "today_shift": { "branch": "Lahore Office", "start": "09:00", "end": "17:00" },
+    "check_in_time":  "08:47",     <span class="c">// null if not checked in yet</span>
+    "check_out_time": null,
+    "working_hours":  0,
+    "status":  "working"           <span class="c">// "not_started" | "working" | "done" | "no_shift"</span>
+}</pre>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 8 — SCHEDULE BOARD
+  ════════════════════════════════════════════════════ -->
+  <div class="section pagebreak">
+    <div class="section-header">
+      <div class="step-num pink">8</div>
+      <h2>Schedule Board</h2>
+      <span class="tag tag-email">+ EMAIL</span>
+    </div>
+
+    <h3>8.1 Files to Create</h3>
+    <div class="filetree">
+      <span class="new">app/Http/Controllers/ScheduleController.php</span><br>
+      <span class="new">app/Http/Resources/ScheduleResource.php</span><br>
+      <span class="new">app/Models/Schedule.php</span><br>
+      <span class="new">app/Mail/ShiftAssigned.php</span><br>
+      <span class="new">app/Mail/ShiftUpdated.php</span>
+    </div>
+
+    <h3>8.2 Endpoints</h3>
+    <table>
+      <tr><th>Method</th><th>Route</th><th>Middleware</th><th>Description</th></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/schedules</td><td>admin, hr</td><td>All schedules (filter by week_start_date)</td></tr>
+      <tr><td><span class="endpoint post">POST</span></td><td>/api/schedules</td><td>admin, hr</td><td>Assign shift → fires ShiftAssigned email</td></tr>
+      <tr><td><span class="endpoint put">PUT</span></td><td>/api/schedules/{id}</td><td>admin, hr</td><td>Update shift → fires ShiftUpdated email</td></tr>
+      <tr><td><span class="endpoint delete">DELETE</span></td><td>/api/schedules/{id}</td><td>admin, hr</td><td>Remove shift assignment</td></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/schedule/mine</td><td>employee</td><td>Own weekly schedule (read-only)</td></tr>
+    </table>
+
+    <h3>8.3 Email Trigger in Controller</h3>
+    <pre><span class="k">public function</span> <span class="fn">store</span>(Request $request)
+{
+    $schedule = Schedule::create($request->validated());
+    $employee = User::find($schedule->employee_id);
+
+    Mail::<span class="fn">to</span>($employee->email)->send(<span class="k">new</span> ShiftAssigned($schedule, $employee));
+
+    <span class="k">return</span> <span class="k">new</span> ScheduleResource($schedule->load('employee', 'branch'));
+}</pre>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 9 — SHIFT REQUESTS
+  ════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num gray">9</div>
+      <h2>Shift Requests</h2>
+      <span class="tag tag-email">+ EMAIL</span>
+    </div>
+
+    <h3>9.1 Files to Create</h3>
+    <div class="filetree">
+      <span class="new">app/Http/Controllers/ShiftRequestController.php</span><br>
+      <span class="new">app/Http/Resources/ShiftRequestResource.php</span><br>
+      <span class="new">app/Models/ShiftRequest.php</span><br>
+      <span class="new">app/Mail/ShiftRequestSubmitted.php</span><br>
+      <span class="new">app/Mail/ShiftRequestDecision.php</span>
+    </div>
+
+    <h3>9.2 Endpoints</h3>
+    <table>
+      <tr><th>Method</th><th>Route</th><th>Middleware</th><th>Description</th></tr>
+      <tr><td><span class="endpoint post">POST</span></td><td>/api/shift-requests</td><td>employee</td><td>Submit request → email to HR</td></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/shift-requests/mine</td><td>employee</td><td>Own requests + statuses</td></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/shift-requests</td><td>admin, hr</td><td>All pending requests</td></tr>
+      <tr><td><span class="endpoint put">PUT</span></td><td>/api/shift-requests/{id}</td><td>admin, hr</td><td>Approve/deny with note → email to employee</td></tr>
+    </table>
+
+    <h3>9.3 Decide Endpoint Logic</h3>
+    <pre><span class="k">public function</span> <span class="fn">decide</span>(Request $request, int $id)
+{
+    $shiftRequest = ShiftRequest::findOrFail($id);
+    $shiftRequest->update([
+        'status'        => $request->status,  <span class="c">// 'approved' | 'denied'</span>
+        'reviewed_by'   => auth()->id(),
+        'reviewed_at'   => now(),
+        'response_note' => $request->response_note,
+    ]);
+
+    $employee = $shiftRequest->employee;
+    Mail::<span class="fn">to</span>($employee->email)->send(<span class="k">new</span> ShiftRequestDecision($shiftRequest));
+
+    <span class="k">return</span> <span class="k">new</span> ShiftRequestResource($shiftRequest);
+}</pre>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 10 — ATTENDANCE REPORTS
+  ════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num blue">10</div>
+      <h2>Attendance Reports Page</h2>
+      <span class="tag tag-api">API</span>
+    </div>
+
+    <h3>10.1 Filtered Log Endpoint — GET /api/attendance</h3>
+    <p>Accepts query parameters: <code>?employee_id=&branch_id=&date=&flag=&from=&to=</code></p>
+    <pre><span class="k">public function</span> <span class="fn">index</span>(Request $request)
+{
+    $query = AttendanceLog::with('employee', 'branch')
+        ->when($request->employee_id, fn($q, $v) => $q->where('employee_id', $v))
+        ->when($request->branch_id,   fn($q, $v) => $q->where('branch_id', $v))
+        ->when($request->flag,        fn($q, $v) => $q->where('flag', $v))
+        ->when($request->date,        fn($q, $v) => $q->whereDate('timestamp', $v))
+        ->when($request->from,        fn($q, $v) => $q->whereDate('timestamp', '>=', $v))
+        ->when($request->to,          fn($q, $v) => $q->whereDate('timestamp', '<=', $v))
+        ->orderByDesc('timestamp');
+
+    <span class="k">return</span> AttendanceLogResource::collection($query->paginate(50));
+}</pre>
+
+    <h3>10.2 Anomaly Detection — GET /api/attendance/anomalies</h3>
+    <pre><span class="c">// Detect 3+ consecutive late arrivals</span>
+<span class="c">// Detect missing check-outs from previous day</span>
+<span class="c">// Detect GPS-rejected attempts (is_valid = false)</span></pre>
+    <p>Logic lives in <code>AttendanceService::getAnomalies()</code> — called by the controller, not inline.</p>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 11 — SETTINGS
+  ════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num gray">11</div>
+      <h2>Settings Page</h2>
+      <span class="tag tag-api">API</span>
+    </div>
+
+    <h3>11.1 Endpoints</h3>
+    <table>
+      <tr><th>Method</th><th>Route</th><th>Middleware</th><th>Description</th></tr>
+      <tr><td><span class="endpoint get">GET</span></td><td>/api/settings</td><td>admin</td><td>Return all settings as key-value object</td></tr>
+      <tr><td><span class="endpoint put">PUT</span></td><td>/api/settings</td><td>admin</td><td>Bulk update settings keys</td></tr>
+    </table>
+
+    <h3>11.2 Default Settings Rows (seed these)</h3>
+    <table>
+      <tr><th>Key</th><th>Default Value</th><th>Purpose</th></tr>
+      <tr><td><code>company_name</code></td><td>AttendPro</td><td>Shown in emails and header</td></tr>
+      <tr><td><code>geofence_buffer</code></td><td>0</td><td>Extra meters added to branch radius</td></tr>
+      <tr><td><code>late_threshold_minutes</code></td><td>15</td><td>Grace period before marking late</td></tr>
+      <tr><td><code>email_on_shift_assign</code></td><td>true</td><td>Toggle shift assignment emails</td></tr>
+      <tr><td><code>email_on_request_decision</code></td><td>true</td><td>Toggle request decision emails</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       STEP 12 — DBMS EXTRAS
+  ════════════════════════════════════════════════════ -->
+  <div class="section pagebreak">
+    <div class="section-header">
+      <div class="step-num purple">12</div>
+      <h2>DBMS Lab Extras</h2>
+      <span class="tag tag-dbms">LAB MARKS</span>
+    </div>
+
+    <div class="callout callout-blue">
+      <p><strong>These are required for DBMS lab marks.</strong> Implement them after everything else is working. Add them as a separate migration file.</p>
+    </div>
+
+    <h3>12.1 MySQL View — attendance_summary_view</h3>
+    <pre>CREATE VIEW attendance_summary_view AS
+SELECT
+    u.id         AS employee_id,
+    u.name       AS employee_name,
+    b.name       AS branch_name,
+    DATE(al.timestamp)          AS attendance_date,
+    MAX(CASE WHEN al.type = 'check_in'  THEN al.timestamp END) AS check_in,
+    MAX(CASE WHEN al.type = 'check_out' THEN al.timestamp END) AS check_out,
+    MAX(al.working_hours)       AS working_hours,
+    MAX(al.flag)                AS flag,
+    MAX(al.is_valid)            AS is_valid
+FROM attendance_logs al
+JOIN users    u ON al.employee_id = u.id
+JOIN branches b ON al.branch_id   = b.id
+GROUP BY u.id, u.name, b.name, DATE(al.timestamp);</pre>
+
+    <h3>12.2 Stored Procedure — get_monthly_summary</h3>
+    <pre>CREATE PROCEDURE get_monthly_summary(
+    IN p_employee_id INT,
+    IN p_month       INT,
+    IN p_year        INT
+)
+BEGIN
+    SELECT
+        COUNT(*)                                           AS total_days,
+        SUM(flag = 'on_time')                             AS on_time_days,
+        SUM(flag = 'late')                                AS late_days,
+        SUM(flag = 'early_departure')                     AS early_departures,
+        ROUND(SUM(COALESCE(working_hours, 0)), 2)         AS total_hours,
+        ROUND(AVG(COALESCE(working_hours, 0)), 2)         AS avg_hours_per_day
+    FROM attendance_summary_view
+    WHERE employee_id = p_employee_id
+      AND MONTH(attendance_date) = p_month
+      AND YEAR(attendance_date)  = p_year;
+END;</pre>
+
+    <h3>12.3 Indexes</h3>
+    <pre>CREATE INDEX idx_attendance_employee_timestamp
+    ON attendance_logs (employee_id, timestamp);
+
+CREATE INDEX idx_attendance_branch_date
+    ON attendance_logs (branch_id, timestamp);
+
+CREATE INDEX idx_users_role
+    ON users (role);</pre>
+
+    <h3>12.4 Call Stored Procedure from Laravel</h3>
+    <pre>$results = DB::select('CALL get_monthly_summary(?, ?, ?)', [
+    $employeeId, $month, $year
+]);
+return response()->json($results[0]);</pre>
+
+    <h3>12.5 Query the View from Laravel</h3>
+    <pre><span class="c">// In ReportService or AttendanceController</span>
+$summary = DB::table('attendance_summary_view')
+    ->where('employee_id', $employeeId)
+    ->whereBetween('attendance_date', [$from, $to])
+    ->get();
+<span class="k">return</span> response()->json($summary);</pre>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       COMPLETE ROUTES REFERENCE
+  ════════════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-num">R</div>
+      <h2>Complete API Routes Reference</h2>
+    </div>
+
+    <pre><span class="c">// routes/api.php</span>
+
+<span class="c">// Public</span>
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login',    [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me',      [AuthController::class, 'me']);
+
+    <span class="c">// Admin only</span>
+    Route::middleware('role:admin')->group(function () {
+        Route::apiResource('employees', EmployeeController::class);
+        Route::put('employees/{id}/toggle-status', [EmployeeController::class, 'toggleStatus']);
+        Route::apiResource('branches', BranchController::class);
+        Route::get('settings',  [SettingsController::class, 'index']);
+        Route::put('settings',  [SettingsController::class, 'update']);
+    });
+
+    <span class="c">// Admin + HR</span>
+    Route::middleware('role:admin,hr')->group(function () {
+        Route::get('dashboard',               [DashboardController::class, 'index']);
+        Route::apiResource('schedules',       ScheduleController::class);
+        Route::get('attendance',              [AttendanceController::class, 'index']);
+        Route::get('attendance/anomalies',    [AttendanceController::class, 'anomalies']);
+        Route::get('shift-requests',          [ShiftRequestController::class, 'index']);
+        Route::put('shift-requests/{id}',     [ShiftRequestController::class, 'decide']);
+    });
+
+    <span class="c">// Employee only</span>
+    Route::middleware('role:employee')->group(function () {
+        Route::post('attendance/checkin',     [AttendanceController::class, 'checkIn']);
+        Route::post('attendance/checkout',    [AttendanceController::class, 'checkOut']);
+        Route::get('attendance/mine',         [AttendanceController::class, 'mine']);
+        Route::get('schedule/mine',           [ScheduleController::class, 'mine']);
+        Route::get('dashboard/my',            [DashboardController::class, 'myWorkspace']);
+        Route::post('shift-requests',         [ShiftRequestController::class, 'store']);
+        Route::get('shift-requests/mine',     [ShiftRequestController::class, 'mine']);
+    });
+});</pre>
+  </div>
+
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>AttendPro — DBMS Lab Project &nbsp;·&nbsp; Laravel 13 + MySQL + React + Vite &nbsp;·&nbsp; Generated for implementation reference</p>
+  </div>
+
+</div>
+</body>
+</html>

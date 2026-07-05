@@ -1,0 +1,24 @@
+# ── Safety-net ignores for the whole repo ──
+
+# Dependencies (also ignored by backend/frontend .gitignore, kept here as a backstop)
+node_modules/
+vendor/
+
+# Secrets / environment
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+
+# Laravel runtime
+backend/storage/*.key
+backend/storage/logs/*.log
+
+# Local tooling / editor / OS
+.claude/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,58 @@
+PHP Extensions for Laravel 13 (attendance-backend)
+====================================================
+
+ALREADY ENABLED (required by Laravel — confirmed in php.ini)
+-------------------------------------------------------------
+extension=zip          ; Composer needs this to extract downloaded packages
+extension=fileinfo     ; Laravel filesystem (league/flysystem-local)
+extension=curl         ; HTTP client, Guzzle, external API calls
+extension=mbstring     ; String handling (multi-byte characters)
+extension=pdo_mysql    ; MySQL database connection via PDO
+extension=gd           ; Image processing (optional but commonly used)
+
+ALREADY ENABLED BY DEFAULT (no change needed)
+----------------------------------------------
+bcmath      ; precise math (used by Laravel internals)
+ctype       ; character type checks
+dom         ; XML/HTML parsing
+filter      ; input filtering
+hash        ; hashing functions
+iconv       ; character encoding
+json        ; JSON encode/decode
+openssl     ; encryption, HTTPS, Sanctum token signing
+pcre        ; regex
+PDO         ; base database abstraction layer
+session     ; session handling
+tokenizer   ; PHP code tokenizing (used by Laravel)
+xml         ; XML parsing
+xmlreader   ; XML reading
+xmlwriter   ; XML writing
+zlib        ; compression
+
+STILL DISABLED (not needed for this project — leave commented out)
+-------------------------------------------------------------------
+;extension=intl        ; internationalization — only needed for localization features
+;extension=soap        ; SOAP web services — not used
+;extension=sockets     ; raw socket connections — not used
+;extension=sodium      ; libsodium encryption — optional (Laravel can use openssl instead)
+;extension=sqlite3     ; SQLite — not needed, using MySQL
+;extension=pdo_sqlite  ; SQLite PDO — not needed
+;extension=pdo_pgsql   ; PostgreSQL — not needed
+;extension=ldap        ; LDAP auth — not needed
+;extension=gmp         ; arbitrary precision math — not needed
+;extension=bz2         ; bzip2 compression — not needed
+;extension=exif        ; image metadata — not needed
+;extension=ftp         ; FTP transfers — not needed
+;extension=gettext     ; GNU gettext i18n — not needed
+;extension=mysqli      ; legacy MySQL (use pdo_mysql instead)
+;extension=snmp        ; SNMP protocol — not needed
+;extension=tidy        ; HTML tidy — not needed
+;extension=xsl         ; XSL transforms — not needed
+
+HOW TO ENABLE AN EXTENSION
+---------------------------
+1. Open:  C:\php82\php.ini
+2. Find the line like:  ;extension=name
+3. Remove the semicolon: extension=name
+4. Restart your terminal / PHP server
+5. Verify with:  php -m | Select-String "name"

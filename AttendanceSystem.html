@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Smart Attendance Management System — Project Plan</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a2e; background: #fff; font-size: 13px; line-height: 1.6; }
+  .cover { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%); color: #fff; padding: 80px 60px; min-height: 220px; }
+  .cover h1 { font-size: 28px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 14px; color: #a0c4ff; margin-bottom: 20px; }
+  .cover .meta { display: flex; gap: 30px; margin-top: 24px; }
+  .cover .meta span { background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; font-size: 12px; color: #e0e0e0; }
+  .section { padding: 28px 60px; border-bottom: 1px solid #eef0f4; }
+  .section:last-child { border-bottom: none; }
+  h2 { font-size: 16px; font-weight: 700; color: #0f3460; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; border-left: 4px solid #e94560; padding-left: 10px; }
+  h3 { font-size: 13px; font-weight: 700; color: #1a1a2e; margin: 14px 0 6px 0; }
+  p { margin-bottom: 8px; color: #333; }
+  ul { padding-left: 20px; margin-bottom: 8px; }
+  ul li { margin-bottom: 4px; color: #333; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  th { background: #0f3460; color: #fff; padding: 8px 12px; text-align: left; font-size: 12px; }
+  td { padding: 7px 12px; border-bottom: 1px solid #eef0f4; font-size: 12px; }
+  tr:nth-child(even) td { background: #f8f9fc; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin: 2px; }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-green { background: #dcfce7; color: #15803d; }
+  .badge-red { background: #fee2e2; color: #b91c1c; }
+  .badge-purple { background: #ede9fe; color: #6d28d9; }
+  .badge-orange { background: #ffedd5; color: #c2410c; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 10px 0; }
+  .card { background: #f8f9fc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; }
+  .card h4 { font-size: 12px; font-weight: 700; color: #0f3460; margin-bottom: 8px; }
+  .role-block { background: #f8f9fc; border-left: 4px solid #0f3460; padding: 10px 14px; margin-bottom: 10px; border-radius: 0 6px 6px 0; }
+  .role-block.hr { border-color: #e94560; }
+  .role-block.emp { border-color: #22c55e; }
+  .step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px; }
+  .step-num { background: #0f3460; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .highlight-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 12px 16px; margin: 10px 0; }
+  .highlight-box p { color: #92400e; font-size: 12px; }
+  code { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 1px 6px; font-family: 'Courier New', monospace; font-size: 11px; color: #c7254e; }
+  .codeblock { background: #1e1e2e; border-radius: 8px; padding: 14px 18px; margin: 10px 0; overflow-x: auto; }
+  .codeblock pre { color: #cdd6f4; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.7; white-space: pre-wrap; }
+  .flow-steps { display: flex; flex-direction: column; gap: 0; margin: 12px 0; }
+  .flow-step { display: flex; align-items: flex-start; gap: 12px; padding: 8px 0; border-left: 2px solid #e2e8f0; padding-left: 16px; margin-left: 10px; position: relative; }
+  .flow-step::before { content: ''; position: absolute; left: -5px; top: 12px; width: 8px; height: 8px; border-radius: 50%; background: #0f3460; }
+  .flow-step:last-child { border-left: 2px solid transparent; }
+  .flow-label { font-size: 11px; font-weight: 700; color: #0f3460; min-width: 120px; }
+  .flow-desc { font-size: 11px; color: #555; }
+  .coord-table td { vertical-align: top; }
+  .footer { background: #1a1a2e; color: #aaa; text-align: center; padding: 16px; font-size: 11px; }
+  @media print {
+    .section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <h1>Smart Attendance Management System</h1>
+  <div class="subtitle">Geofence-Based Employee Attendance — DBMS Lab Project Plan</div>
+  <div class="meta">
+    <span>Frontend: React + Tailwind / Bootstrap</span>
+    <span>Backend: Laravel 13</span>
+    <span>Database: MySQL</span>
+    <span>Date: May 2026</span>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="section">
+  <h2>Project Overview</h2>
+  <p>A web-based Smart Attendance Management System that automatically validates employee check-ins and check-outs using GPS coordinates matched against predefined office geofence zones. The system supports multiple branches, role-based access, shift scheduling, email notifications, and HR reporting — all in a single unified application.</p>
+  <div class="highlight-box">
+    <p><strong>Core Concept:</strong> Employees click a button on their device — the app captures their GPS location and sends it to the server. Laravel calculates the Haversine distance between the employee's position and the branch geofence. If inside the zone, the attendance is logged. If outside, it is rejected with an error. All geofence logic runs server-side so it cannot be spoofed from the client.</p>
+  </div>
+</div>
+
+<!-- TECH STACK -->
+<div class="section">
+  <h2>Tech Stack</h2>
+  <table>
+    <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+    <tr><td><strong>Frontend</strong></td><td>React (Vite) + Tailwind CSS or Bootstrap</td><td>SPA — all user interfaces, forms, dashboards, role-based routing</td></tr>
+    <tr><td><strong>Backend / API</strong></td><td>Laravel 13</td><td>REST API, business logic, geofence math, auth, email dispatch</td></tr>
+    <tr><td><strong>Database</strong></td><td>MySQL</td><td>All persistent data — employees, branches, attendance logs, schedules, requests</td></tr>
+    <tr><td><strong>Authentication</strong></td><td>Laravel Sanctum</td><td>Token-based auth for the React SPA</td></tr>
+    <tr><td><strong>Email</strong></td><td>Laravel Mail + Mailtrap (dev)</td><td>Shift assignment, request approval/denial notifications</td></tr>
+    <tr><td><strong>Maps</strong></td><td>Leaflet.js</td><td>Visual geofence circle on branch settings page</td></tr>
+    <tr><td><strong>GPS</strong></td><td>Browser Geolocation API</td><td>Capture employee coordinates on check-in/out</td></tr>
+  </table>
+</div>
+
+<!-- ROLES -->
+<div class="section">
+  <h2>User Roles</h2>
+  <div class="role-block">
+    <h4>Admin</h4>
+    <ul>
+      <li>Full access to all modules</li>
+      <li>Create and manage branches with geofence configuration</li>
+      <li>Add, edit, deactivate employees and assign them to branches</li>
+      <li>Assign and edit work schedules for all employees</li>
+      <li>View all attendance records and reports</li>
+      <li>Manage application settings</li>
+      <li>Approve or deny shift change requests</li>
+    </ul>
+  </div>
+  <div class="role-block hr">
+    <h4>HR Manager</h4>
+    <ul>
+      <li>View and filter all attendance records</li>
+      <li>Assign schedules to employees</li>
+      <li>Review and act on shift change requests from employees</li>
+      <li>View flagged anomalies (late arrivals, early departures, rejected GPS)</li>
+      <li>View employee list (read-only)</li>
+      <li>Export attendance reports</li>
+    </ul>
+  </div>
+  <div class="role-block emp">
+    <h4>Employee</h4>
+    <ul>
+      <li>Clock in and clock out (GPS validated)</li>
+      <li>View own attendance history and status flags</li>
+      <li>View own assigned schedule (read-only — cannot edit)</li>
+      <li>Submit shift change requests with a reason</li>
+      <li>Track status of submitted requests</li>
+      <li>Receive email notifications when shift is assigned or request is resolved</li>
+    </ul>
+  </div>
+</div>
+
+<!-- PAGES -->
+<div class="section">
+  <h2>Pages &amp; Modules</h2>
+
+  <h3>Authentication</h3>
+  <ul>
+    <li><strong>Login Page</strong> — single login page for all roles. After login, role determines which layout and navigation is shown.</li>
+  </ul>
+
+  <h3>Admin / HR Panel</h3>
+  <table>
+    <tr><th>Page</th><th>What It Does</th></tr>
+    <tr><td><strong>Dashboard</strong></td><td>Today's overview — total employees, present now, late count, early departures, anomaly feed with unusual GPS or pattern alerts</td></tr>
+    <tr><td><strong>Employees</strong></td><td>List all employees with status. Add, edit, deactivate. Assign to branch. Filter by branch or role.</td></tr>
+    <tr><td><strong>Branches</strong></td><td>Add/edit branches. Set geofence center (lat/lng) and radius using a Leaflet.js map with a draggable pin. Set shift start/end times per branch.</td></tr>
+    <tr><td><strong>Schedule</strong></td><td>Weekly shift board — Mon–Sun columns, employee rows, each cell shows assigned shift. Click a cell to assign or update. Email fires automatically on assignment.</td></tr>
+    <tr><td><strong>Attendance</strong></td><td>Full attendance log with filters by employee, branch, date range, and status flag. Flagged tab for anomalies. Working hours summary per employee per month.</td></tr>
+    <tr><td><strong>Shift Requests</strong></td><td>Pending requests from employees. HR can approve or deny with a reason. Email sent to employee on decision.</td></tr>
+    <tr><td><strong>Settings</strong></td><td>Company name/logo, default shift times, geofence buffer tolerance, email notification toggles, change password.</td></tr>
+  </table>
+
+  <h3>Employee Panel (Separate Minimal Layout)</h3>
+  <table>
+    <tr><th>Page</th><th>What It Does</th></tr>
+    <tr><td><strong>Workspace</strong></td><td>Live running clock, today's shift card (time, branch), current status badge (Not Checked In / Working since X / Checked Out), hours-worked-today progress bar, clock in/out button</td></tr>
+    <tr><td><strong>Attendance — Clock In/Out Tab</strong></td><td>Button to clock in or out. Captures GPS, submits to server, shows result (approved / rejected with reason).</td></tr>
+    <tr><td><strong>Attendance — Records Tab</strong></td><td>Personal attendance history table — date, check-in time, check-out time, hours worked, status flag (on-time, late, early departure)</td></tr>
+    <tr><td><strong>My Schedule</strong></td><td>Read-only weekly view of assigned shifts. Cannot be edited.</td></tr>
+    <tr><td><strong>My Requests</strong></td><td>Form to submit a shift change request with reason. List of own submitted requests with their status (pending / approved / denied).</td></tr>
+  </table>
+</div>
+
+<!-- UNIQUE FEATURES -->
+<div class="section">
+  <h2>Unique Features (Differentiators)</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4>Shift Request Workflow</h4>
+      <p>Employees cannot edit their own schedule but can submit a shift change request with a reason. HR reviews and approves or denies. Email notification fires at each step. This adds a realistic approval workflow missing from most student projects.</p>
+    </div>
+    <div class="card">
+      <h4>Attendance Heatmap Calendar</h4>
+      <p>HR and Admin get a GitHub-style heatmap of attendance density per day. Visually shows attendance patterns at a glance. Far more engaging than plain tables and stands out immediately.</p>
+    </div>
+    <div class="card">
+      <h4>Live Employee Workspace</h4>
+      <p>The employee home page shows a live ticking clock, today's shift details as a card, a "Working since X" badge updating in real time, and a progress bar for hours worked vs shift length. Makes the UI feel alive.</p>
+    </div>
+    <div class="card">
+      <h4>Geofence Map Preview</h4>
+      <p>On the branch configuration page, a Leaflet.js map shows the geofence circle drawn around the branch. Admin drags a pin to set location, adjusts a slider for radius, and the circle updates live. Makes the invisible geofence concept visual and impressive.</p>
+    </div>
+    <div class="card">
+      <h4>Anomaly Feed</h4>
+      <p>A section in the HR dashboard shows unusual activity automatically — rejected GPS attempts (too far), employees with 3+ consecutive late arrivals, missing check-outs. Adds intelligence beyond simple logging.</p>
+    </div>
+    <div class="card">
+      <h4>Weekly Shift Board</h4>
+      <p>Instead of a plain assignment form, the schedule page is a visual Mon–Sun board with employee rows. HR clicks any cell to assign a shift. Color-coded by branch when multiple branches exist.</p>
+    </div>
+  </div>
+</div>
+
+<!-- GEOFENCE LOGIC -->
+<div class="section">
+  <h2>Geofence Attendance — How It Works</h2>
+  <p>All geofence validation happens in Laravel — never on the client. This prevents coordinate spoofing from the browser. The GPS only provides raw coordinates — a human-readable address is fetched separately via reverse geocoding.</p>
+
+  <h3>Full Flow — Step by Step</h3>
+  <div class="flow-steps">
+    <div class="flow-step"><span class="flow-label">1. Button Clicked</span><span class="flow-desc">Employee clicks "Clock In" on their device (phone or laptop browser)</span></div>
+    <div class="flow-step"><span class="flow-label">2. GPS Permission</span><span class="flow-desc">Browser prompts for location access — employee must allow it once</span></div>
+    <div class="flow-step"><span class="flow-label">3. Coordinates Fetched</span><span class="flow-desc">Browser Geolocation API returns <code>{ latitude, longitude }</code> using GPS chip (high accuracy mode)</span></div>
+    <div class="flow-step"><span class="flow-label">4. Reverse Geocoding</span><span class="flow-desc">React calls OpenStreetMap Nominatim API with the coordinates — gets back a human-readable address like "15 Main Blvd, Lahore, Pakistan" — stored alongside the log</span></div>
+    <div class="flow-step"><span class="flow-label">5. Sent to Laravel</span><span class="flow-desc">React sends <code>{ gps_lat, gps_lng, readable_address }</code> to <code>POST /api/attendance/checkin</code> with auth token</span></div>
+    <div class="flow-step"><span class="flow-label">6. Branch Fetched</span><span class="flow-desc">Laravel reads the authenticated employee's assigned branch — gets its center <code>lat/lng</code> and <code>radius_meters</code></span></div>
+    <div class="flow-step"><span class="flow-label">7. Haversine Runs</span><span class="flow-desc">Laravel calculates the straight-line distance in meters between the employee's GPS and the branch center</span></div>
+    <div class="flow-step"><span class="flow-label">8. Decision Made</span><span class="flow-desc">Distance ≤ radius → attendance logged. Distance &gt; radius → request rejected with distance shown in the error message</span></div>
+    <div class="flow-step"><span class="flow-label">9. Flag Applied</span><span class="flow-desc">If valid, check-in time is compared to shift start time — flagged as on-time or late automatically</span></div>
+  </div>
+
+  <h3>The Browser Function — navigator.geolocation.getCurrentPosition()</h3>
+  <p>This is a built-in function available in every modern browser — no installation, no library, no API key needed. You simply call it and the browser handles everything internally. It decides whether to use the GPS chip, nearby Wi-Fi networks, or cell tower signals to determine the device's location, picks the most accurate source available, and returns the coordinates back to your code.</p>
+  <table>
+    <tr><th>Source Used by Browser</th><th>Accuracy</th><th>How It Works</th></tr>
+    <tr><td><strong>GPS Chip</strong></td><td>~5 meters</td><td>Communicates with satellites in orbit to pinpoint location</td></tr>
+    <tr><td><strong>Wi-Fi</strong></td><td>~20–50 meters</td><td>Matches nearby Wi-Fi network names against a global database of known router locations</td></tr>
+    <tr><td><strong>Cell Towers</strong></td><td>~300–1000 meters</td><td>Triangulates position based on which mobile towers the device can detect</td></tr>
+  </table>
+  <p>You never write code to handle any of these sources. The browser chooses automatically. The only thing the user sees is a one-time popup: <strong>"Allow this site to access your location?"</strong> — once allowed, the coordinates are returned instantly.</p>
+  <p>The function takes three arguments: a <strong>success callback</strong> (runs when location is found), an <strong>error callback</strong> (runs if the user denies or GPS fails), and an <strong>options object</strong> where <code>enableHighAccuracy: true</code> tells the browser to prefer the GPS chip over Wi-Fi for better precision.</p>
+
+  <h3>Step 3 — GPS Capture in React</h3>
+  <div class="codeblock"><pre>const handleClockIn = () => {
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      getAddressThenSubmit(latitude, longitude);
+    },
+    (error) => { alert("Location access denied. Please enable GPS."); },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+};</pre></div>
+  <p><code>enableHighAccuracy: true</code> forces the device to use the GPS chip instead of Wi-Fi triangulation, giving a more precise location reading.</p>
+
+  <h3>Step 4 — Reverse Geocoding (How Address Is Fetched)</h3>
+  <p>GPS coordinates are numbers — <code>{ lat: 31.5204, lng: 74.3587 }</code> — they do not include a street name or city. To display and store a readable location, React calls the free OpenStreetMap Nominatim API. No API key is required.</p>
+  <div class="codeblock"><pre>const getAddressThenSubmit = async (lat, lng) => {
+  const res = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+  );
+  const data = await res.json();
+  const address = data.display_name;
+  // e.g. "15 Main Boulevard, Gulberg III, Lahore, Punjab, Pakistan"
+
+  sendClockIn(lat, lng, address); // now send all three to Laravel
+};</pre></div>
+
+  <h3>Step 7 — Haversine Formula in Laravel</h3>
+  <p>The Haversine formula calculates the shortest distance between two points on the Earth's surface given their latitude and longitude. It accounts for Earth's curvature. Result is in meters.</p>
+  <div class="codeblock"><pre>private function haversine($lat1, $lng1, $lat2, $lng2): float
+{
+    $earthRadius = 6371000; // meters
+
+    $dLat = deg2rad($lat2 - $lat1);
+    $dLng = deg2rad($lng2 - $lng1);
+
+    $a = sin($dLat / 2) ** 2
+       + cos(deg2rad($lat1)) * cos(deg2rad($lat2))
+       * sin($dLng / 2) ** 2;
+
+    return $earthRadius * 2 * atan2(sqrt($a), sqrt(1 - $a));
+}</pre></div>
+
+  <h3>Step 8 — Check-In Controller Logic</h3>
+  <div class="codeblock"><pre>public function checkIn(Request $request)
+{
+    $employee = $request->user();
+    $branch   = $employee->branch;
+
+    $distance = $this->haversine(
+        $request->gps_lat, $request->gps_lng,
+        $branch->lat, $branch->lng
+    );
+
+    if ($distance > $branch->radius_meters) {
+        return response()->json([
+            'success' => false,
+            'message' => "You are {$distance}m away. Must be within {$branch->radius_meters}m."
+        ], 403);
+    }
+
+    AttendanceLog::create([
+        'employee_id'      => $employee->id,
+        'branch_id'        => $branch->id,
+        'type'             => 'check_in',
+        'gps_lat'          => $request->gps_lat,
+        'gps_lng'          => $request->gps_lng,
+        'readable_address' => $request->readable_address,
+        'timestamp'        => now(),
+        'is_valid'         => true,
+        'flag'             => now()->gt($branch->shift_start) ? 'late' : 'on_time'
+    ]);
+}</pre></div>
+
+  <h3>Validation Results</h3>
+  <table>
+    <tr><th>Result</th><th>Condition</th><th>Action</th></tr>
+    <tr><td><span class="badge badge-green">Valid</span></td><td>Distance &le; Branch radius (+ optional buffer from settings)</td><td>Log attendance, set timestamp, apply flag</td></tr>
+    <tr><td><span class="badge badge-red">Rejected</span></td><td>Distance &gt; Branch radius</td><td>Return error with exact distance, log rejected attempt in anomaly feed</td></tr>
+    <tr><td><span class="badge badge-orange">Late</span></td><td>Valid check-in after branch shift_start time</td><td>Log with late flag</td></tr>
+    <tr><td><span class="badge badge-purple">Early Departure</span></td><td>Valid check-out before branch shift_end time</td><td>Log with early departure flag</td></tr>
+  </table>
+
+  <h3>Where Each Coordinate Comes From</h3>
+  <table class="coord-table">
+    <tr><th>Data</th><th>Source</th><th>When Set</th></tr>
+    <tr><td><strong>Employee GPS (lat/lng)</strong></td><td>Browser Geolocation API</td><td>Every clock in/out click</td></tr>
+    <tr><td><strong>Readable address</strong></td><td>OpenStreetMap Nominatim (reverse geocoding)</td><td>Immediately after GPS is captured, before sending to server</td></tr>
+    <tr><td><strong>Branch center (lat/lng)</strong></td><td>Admin sets via Leaflet.js map (draggable pin)</td><td>When branch is created or edited</td></tr>
+    <tr><td><strong>Branch radius</strong></td><td>Admin sets via slider on branch config page</td><td>When branch is created or edited</td></tr>
+  </table>
+
+  <h3>What the Employee Sees</h3>
+  <div class="highlight-box">
+    <p><strong>Inside zone:</strong> "Checked in at 9:02 AM — Lahore Office &nbsp;|&nbsp; 15 Main Blvd, Gulberg III, Lahore"</p>
+    <p style="margin-top:6px"><strong>Outside zone:</strong> "Check-in failed. You are 450m away from the office. Must be within 200m."</p>
+  </div>
+</div>
+
+<!-- DATABASE -->
+<div class="section">
+  <h2>MySQL Database Schema</h2>
+  <table>
+    <tr><th>Table</th><th>Key Columns</th><th>Purpose</th></tr>
+    <tr><td><code>users</code></td><td>id, name, email, password, role, branch_id, is_active</td><td>All system users — admin, HR, employee</td></tr>
+    <tr><td><code>branches</code></td><td>id, name, address, lat, lng, radius_meters, shift_start, shift_end</td><td>Office locations with geofence config</td></tr>
+    <tr><td><code>schedules</code></td><td>id, employee_id, branch_id, day_of_week, shift_start, shift_end, week_start_date</td><td>Per-employee shift assignments</td></tr>
+    <tr><td><code>attendance_logs</code></td><td>id, employee_id, branch_id, type, gps_lat, gps_lng, timestamp, is_valid, flag, working_hours</td><td>All clock in/out events with GPS and flags</td></tr>
+    <tr><td><code>shift_requests</code></td><td>id, employee_id, schedule_id, reason, status, reviewed_by, reviewed_at, response_note</td><td>Employee shift change requests and HR decisions</td></tr>
+    <tr><td><code>settings</code></td><td>id, key, value</td><td>App-level configuration (company name, buffer, toggles)</td></tr>
+  </table>
+  <h3>DBMS Lab Extras</h3>
+  <ul>
+    <li><strong>MySQL View:</strong> <code>attendance_summary_view</code> — joins users + attendance_logs + branches for HR report queries</li>
+    <li><strong>Stored Procedure:</strong> <code>get_monthly_summary(employee_id, month, year)</code> — returns total hours, late count, early departures</li>
+    <li><strong>Indexes:</strong> on <code>attendance_logs(employee_id, timestamp)</code> for fast report queries</li>
+    <li><strong>Foreign Keys:</strong> all relationships enforced with cascade rules</li>
+  </ul>
+</div>
+
+<!-- EMAIL -->
+<div class="section">
+  <h2>Email Notification Triggers</h2>
+  <table>
+    <tr><th>Event</th><th>Recipient</th><th>Email Content</th></tr>
+    <tr><td>Shift assigned to employee</td><td>Employee</td><td>Your shift for [week] has been assigned — [day, time, branch]</td></tr>
+    <tr><td>Shift updated by HR</td><td>Employee</td><td>Your shift has been updated — new details</td></tr>
+    <tr><td>Shift change request submitted</td><td>HR Manager</td><td>Employee X has submitted a shift change request</td></tr>
+    <tr><td>Shift request approved</td><td>Employee</td><td>Your shift change request has been approved</td></tr>
+    <tr><td>Shift request denied</td><td>Employee</td><td>Your shift change request was denied — reason included</td></tr>
+  </table>
+  <p>Built using Laravel Mailable classes. Use <strong>Mailtrap.io</strong> for development testing without sending real emails.</p>
+</div>
+
+<!-- BUILD ORDER -->
+<div class="section">
+  <h2>Recommended Build Order</h2>
+  <div class="step"><div class="step-num">1</div><p><strong>Laravel setup</strong> — install project, configure MySQL, set up migrations for all tables, seed dummy data</p></div>
+  <div class="step"><div class="step-num">2</div><p><strong>Authentication</strong> — Laravel Sanctum, login API, role middleware, React login page with token storage</p></div>
+  <div class="step"><div class="step-num">3</div><p><strong>Branch management</strong> — CRUD for branches, geofence fields, Leaflet map integration on branch form</p></div>
+  <div class="step"><div class="step-num">4</div><p><strong>Employee management</strong> — CRUD for employees, branch assignment, role assignment</p></div>
+  <div class="step"><div class="step-num">5</div><p><strong>Clock in/out</strong> — GPS capture in React, Laravel geofence validation, attendance log creation, flag logic</p></div>
+  <div class="step"><div class="step-num">6</div><p><strong>Schedule assignment</strong> — weekly board UI, assign shifts, Laravel Mail email on assignment</p></div>
+  <div class="step"><div class="step-num">7</div><p><strong>Shift request workflow</strong> — employee submission, HR approval/denial, email at each step</p></div>
+  <div class="step"><div class="step-num">8</div><p><strong>Attendance reports</strong> — filtered table, working hours, flagged records, heatmap calendar</p></div>
+  <div class="step"><div class="step-num">9</div><p><strong>Employee panel</strong> — workspace with live clock, read-only schedule, personal attendance records</p></div>
+  <div class="step"><div class="step-num">10</div><p><strong>Settings page</strong> — company info, geofence buffer, email toggles, password change</p></div>
+  <div class="step"><div class="step-num">11</div><p><strong>MySQL View + Stored Procedure</strong> — add for DBMS marks</p></div>
+  <div class="step"><div class="step-num">12</div><p><strong>Polish</strong> — anomaly feed, attendance heatmap, responsive UI, error states</p></div>
+</div>
+
+<div class="footer">
+  Smart Attendance Management System — DBMS Lab Project &nbsp;|&nbsp; Stack: React + Laravel 13 + MySQL &nbsp;|&nbsp; May 2026
+</div>
+
+</body>
+</html>
