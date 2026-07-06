@@ -20,17 +20,27 @@ return new class extends Migration
             }
         });
 
-        // manager_id must match users.id which is int(11) signed — drop any
-        // wrongly-typed column left by a previous attempt, then add it correctly.
+        // manager_id must match users.id, which is BIGINT UNSIGNED (from $table->id()).
+        // Drop any wrongly-typed column left by a previous attempt, then add it correctly.
         if (Schema::hasColumn('branches', 'manager_id')) {
             Schema::table('branches', function (Blueprint $table) {
                 $table->dropColumn('manager_id');
             });
         }
         Schema::table('branches', function (Blueprint $table) {
-            $table->integer('manager_id')->nullable()->after('working_days');
+            $table->unsignedBigInteger('manager_id')->nullable()->after('working_days');
             $table->foreign('manager_id')->references('id')->on('users')->nullOnDelete();
         });
+
+        // Now that both tables exist, add the users.branch_id foreign key that
+        // couldn't be created in the users migration (branches didn't exist yet).
+        $hasBranchFk = collect(Schema::getForeignKeys('users'))
+            ->contains(fn ($fk) => in_array('branch_id', $fk['columns']));
+        if (! $hasBranchFk) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->foreign('branch_id')->references('id')->on('branches')->nullOnDelete();
+            });
+        }
 
         Schema::table('branches', function (Blueprint $table) {
             if (!Schema::hasColumn('branches', 'created_at')) {

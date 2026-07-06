@@ -17,9 +17,11 @@ return new class extends Migration
             }
         });
 
-        // time-off requests are date-based, so a linked schedule is optional now
+        // time-off requests are date-based, so a linked schedule is optional now.
+        // Keep the BIGINT UNSIGNED type so the foreign key to schedules.id stays valid;
+        // only make it nullable.
         Schema::table('shift_requests', function (Blueprint $table) {
-            $table->integer('schedule_id')->nullable()->change();
+            $table->unsignedBigInteger('schedule_id')->nullable()->change();
         });
     }
 

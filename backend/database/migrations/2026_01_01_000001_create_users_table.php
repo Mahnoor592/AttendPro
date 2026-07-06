@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('email', 255)->unique();
             $table->string('password');
             $table->enum('role', ['admin', 'hr', 'employee']);
-            $table->foreignId('branch_id')->nullable()->constrained()->nullOnDelete();
+            // FK added in the branches migration — branches table doesn't exist yet.
+            $table->foreignId('branch_id')->nullable();
             $table->boolean('is_active')->default(true);
         });
     }
