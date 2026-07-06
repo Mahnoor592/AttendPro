@@ -1,5 +1,6 @@
 # Laravel 13 API — production image for Railway
-FROM php:8.3-cli
+# PHP 8.4 (the composer.lock requires Symfony >= 8.4.1)
+FROM php:8.4-cli
 
 # System packages + PHP extensions Laravel + MySQL need
 RUN apt-get update && apt-get install -y \
