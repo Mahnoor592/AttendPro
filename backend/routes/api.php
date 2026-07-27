@@ -10,8 +10,8 @@ use App\Http\Controllers\ShiftRequestController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SettingsController;
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login',    [AuthController::class, 'login']);
+// No public registration — accounts are provisioned by an admin. See DatabaseSeeder for bootstrap.
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);

@@ -25,26 +25,8 @@ class AuthController extends Controller
         ];
     }
 
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
-        ]);
-
-        $user = User::create([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'password'  => $request->password,
-            'role'      => 'admin',
-            'is_active' => true,
-        ]);
-
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return response()->json(['user' => $this->payload($user), 'token' => $token], 201);
-    }
+    // There is no public registration. The first admin is created by the database seeder
+    // (see DatabaseSeeder); every account after that is created from the admin panel.
 
     public function login(Request $request)
     {

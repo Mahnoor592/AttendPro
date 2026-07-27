@@ -1,20 +1,5 @@
 import client from '../api/client'
 
-export async function signUp({ name, email, password }) {
-    try {
-        const res = await client.post('/register', { name, email, password })
-        const { user, token } = res.data
-        localStorage.setItem('token', token)
-        localStorage.setItem('current_user', JSON.stringify(user))
-        return { user }
-    } catch (err) {
-        const msg = err.response?.data?.message
-            || err.response?.data?.errors?.email?.[0]
-            || 'Registration failed.'
-        return { error: msg }
-    }
-}
-
 export async function signIn({ email, password }) {
     try {
         const res = await client.post('/login', { email, password })

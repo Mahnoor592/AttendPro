@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { signIn } from '../utils/auth'
 import AuthShell from '../components/layout/AuthShell'
 
@@ -80,10 +80,7 @@ export default function Login() {
       </form>
 
       <p className="text-center text-sm text-slate-400 mt-6">
-        Don't have an account?{' '}
-        <Link to="/signup" className="text-teal-600 font-semibold hover:text-teal-700 transition-colors">
-          Create an account
-        </Link>
+        Access is managed by your administrator — contact them to get an employee account.
       </p>
     </AuthShell>
   )

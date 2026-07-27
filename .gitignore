@@ -16,6 +16,10 @@ dist/
 backend/storage/*.key
 backend/storage/logs/*.log
 
+# Walkthrough recordings — hosted on GitHub via the README, no need to version them
+screenshots/*.mp4
+screenshots/*.gif
+
 # Local tooling / editor / OS
 .claude/
 .vscode/

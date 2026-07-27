@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login                from './pages/Login'
-import Signup               from './pages/Signup'
 import ManagerToday         from './pages/admin/Today'
 import ManagerEmployees     from './pages/admin/Employees'
 import ManagerBranches      from './pages/admin/Branches'
@@ -23,10 +22,9 @@ function RootRedirect() {
 export default function App() {
     return (
         <Routes>
-            {/* Public */}
+            {/* Public — accounts are provisioned by an admin, so there is no signup route */}
             <Route path="/"       element={<RootRedirect />} />
             <Route path="/login"  element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
 
             {/* Admin */}
             <Route path="/admin/today" element={

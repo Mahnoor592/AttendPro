@@ -39,15 +39,37 @@ Three roles each get their own interface:
 
 **Live:** https://attend-74qh2sp2x-mahnoor592s-projects.vercel.app/login
 
-| Role | Email | Password |
-| --- | --- | --- |
-| Admin | `admin@company.com` | `admin123` |
-| Employee | `ali@company.com` | `employee123` |
+The deployed instance runs on sample data and sign-in isn't public, since an attendance system is an
+internal tool rather than something you register for. The walkthrough below covers what each role
+sees — admin schedule building, attendance review, and the employee clock-in flow.
 
-> **Note on the demo:** check-in requires your browser to share location, and the seeded branches are
-> in Lahore, Karachi, and Islamabad. If you're elsewhere, check-in will correctly reject you as out
-> of range — that's the feature working. To test a successful check-in, raise the
-> `geofence_buffer` setting from the admin panel, or move a branch's coordinates to your own location.
+https://github.com/user-attachments/assets/a6c59a9a-58bf-40ff-b791-a6f1037ffec0
+
+> **If the live site doesn't load, or requests fail:** the frontend is hosted on Vercel and stays up
+> indefinitely, but the backend runs on Railway's free tier — once its usage allowance is spent the API
+> stops responding, so the page can load fine while every request fails. Nothing is broken in the
+> application itself; the walkthrough above shows it running end to end.
+
+> **Note on location, if you run it yourself:** check-in needs the browser to share location, and the
+> sample branches sit in Lahore, Karachi, and Islamabad. If you're anywhere else, check-in will reject
+> you as out of range — that's the feature working, not a bug. To get a successful check-in, raise the
+> `geofence_buffer` setting from the admin panel, or set a branch's coordinates to your own location.
+
+## Screenshots
+
+**Weekly schedule builder** — assign shifts per employee, per day, scoped to a week.
+
+![Admin schedule builder](screenshots/admin-schedule.png)
+
+**Attendance log** — every check-in and check-out across all branches, filterable by employee, status,
+and date range, with on-time/late status and hours worked per session.
+
+![Admin attendance log](screenshots/admin-attendance.png)
+
+**Employee clock-in** — location is captured and checked against the branch geofence before the
+check-in is accepted.
+
+![Employee clock-in screen](screenshots/employee-checkin.png)
 
 ## How the geofencing works
 
@@ -93,6 +115,26 @@ and `shift_end`; working hours are computed on check-out from the matching open 
 - **Repeat lateness** — employees with 3 or more late check-ins, aggregated in SQL via `HAVING COUNT(*) >= 3`
 - **Missing check-outs** — employees who checked in today and never checked out
 
+## Design notes
+
+**Single-tenant by design.** AttendPro is built the way workforce tools are usually deployed — one
+company, one instance. Branches, employees, schedules, and settings all belong to the organisation
+running it, which keeps queries straightforward and avoids carrying tenant-scoping overhead on every
+table and every read.
+
+**Accounts are provisioned by an administrator — there is no public signup.** An attendance system is
+an internal tool, so letting anyone create their own account into a company's workspace doesn't make
+sense: it's how you end up with strangers holding admin rights over real payroll data. There is no
+registration endpoint at all. The first administrator is created by the database seeder as part of
+setup, and every account after that — HR or employee — is created from the admin panel, so access is
+always granted deliberately.
+
+Supporting multiple independent companies on a single deployment would mean introducing an
+organisation entity, an `organization_id` across six tables, and a global query scope enforcing
+isolation on every read — plus org-scoped uniqueness on settings, and care to keep the scope off the
+login path. That's a deliberate scoping trade-off rather than an oversight, and the natural next step
+for the project.
+
 ## Tech stack
 
 **Backend** — Laravel 13.8 on PHP 8.3+, MySQL, Laravel Sanctum for token auth.
@@ -106,9 +148,11 @@ Role-aware layout shells and protected routes, plus custom date-range and time p
 
 ## API
 
-All routes are prefixed `/api`. Everything except register/login requires a Sanctum bearer token.
+All routes are prefixed `/api`. Everything except login requires a Sanctum bearer token.
 
-**Auth** — `POST /register`, `POST /login`, `POST /logout`, `GET|PUT /me`, `PUT /me/password`, `DELETE /me`
+**Auth** — `POST /login`, `POST /logout`, `GET|PUT /me`, `PUT /me/password`, `DELETE /me`
+
+There is deliberately no `POST /register` — see [Design notes](#design-notes).
 
 **Employee** (`role:employee`)
 ```
@@ -154,9 +198,12 @@ php artisan serve            # http://localhost:8000
 ```
 
 The SQL dump ships the schema plus sample branches, employees, schedules, and attendance history.
-If you'd rather start from an empty database, run `php artisan migrate` instead of importing the dump
-and register your first account through the UI — note that registration creates an `admin`, so
-employees are then created from the admin panel.
+
+**Starting from an empty database instead?** Run `php artisan migrate` rather than importing the dump,
+then `php artisan db:seed`. Since there's no public signup, the seeder is the bootstrap path — it
+creates the first administrator and prints the credentials. Override them with `ADMIN_EMAIL`,
+`ADMIN_PASSWORD`, and `ADMIN_NAME` in `.env` if you'd rather set your own. Log in as that admin and
+create your branches and employees from the panel.
 
 **Frontend**
 
