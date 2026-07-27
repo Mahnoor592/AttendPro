@@ -8,7 +8,7 @@
   Employees can only clock in when they are physically inside their assigned branch —
   verified by GPS distance, not by trust.
 
-  [Live Demo](https://attend-74qh2sp2x-mahnoor592s-projects.vercel.app/login) ·
+  [Live Demo](https://attend-pro-drab.vercel.app/login) ·
   [Report a bug](https://github.com/Mahnoor592/AttendPro/issues)
 
   <sub>Laravel 13 · React 18 · MySQL · Tailwind CSS</sub>
@@ -37,7 +37,7 @@ Three roles each get their own interface:
 
 ## Demo
 
-**Live:** https://attend-74qh2sp2x-mahnoor592s-projects.vercel.app/login
+**Live:** https://attend-pro-drab.vercel.app/login
 
 The deployed instance runs on sample data and sign-in isn't public, since an attendance system is an
 internal tool rather than something you register for. The walkthrough below covers what each role
