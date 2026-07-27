@@ -41,8 +41,8 @@ Three roles each get their own interface:
 
 | Role | Email | Password |
 | --- | --- | --- |
-| Admin | `admin@company.com` | `admin123` |
-| Employee | `ali@company.com` | `employee123` |
+| Admin | `mahnoorriaz@gmail.com` | `Mahnoor123` |
+| Employee | `ali@gmail.com` | `Ali123` |
 
 > **Note on the demo:** check-in requires your browser to share location, and the seeded branches are
 > in Lahore, Karachi, and Islamabad. If you're elsewhere, check-in will correctly reject you as out
