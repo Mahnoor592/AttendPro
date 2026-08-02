@@ -32,7 +32,7 @@ Three roles each get their own interface:
 | Role | Can do |
 | --- | --- |
 | **Admin** | Manage branches and employees, build weekly schedules, approve/reject shift requests, review all attendance, configure system settings |
-| **HR** | Read-only view of live daily attendance across branches |
+
 | **Employee** | Check in / out, view own schedule and attendance history, submit shift change requests |
 
 ## Demo
